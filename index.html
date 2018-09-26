@@ -1,0 +1,167 @@
+<html>
+<head>
+<title>The Home Gym Price Rationalizer</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<style>
+	#body_div{
+		width:600px; 
+		margin:0 auto;
+	}
+	
+	table {
+		border: 0;
+	}
+	td{
+		padding: 5px 15px 0 15px;
+	}
+	
+	td.def{
+		font-weight: bold;
+		width:30%;
+	}
+	#results{
+		margin-top:20px;
+		display:none;
+	}
+	.happytext{
+		color:green;
+	}
+	.costlytext{
+		color:brown;
+	}
+	#protip{
+		margin-top:20px;
+		font-style:italic;
+	}
+</style>
+<script>
+function runNumbers(){
+	var equipment = Number($('#equipment').val());
+	var resaleValue = Number($('#resale_value').val())/100.0;
+	var lengthOwnership = Number($('#length_ownership').val());
+	var spaceValue = Number($('#space_value').val());
+	var numUsers = Number($('#num_users').val());
+	var membershipPrice = Number($('#membership_price').val());
+	
+	var upfrontCost = equipment*(1-resaleValue)/lengthOwnership;
+	var totalMonthlyCost = upfrontCost + spaceValue - numUsers*membershipPrice;
+	
+	//debugger;
+	
+	if(isNaN(totalMonthlyCost) || !isFinite(totalMonthlyCost)){
+		//alert('Could not calculate. Please make sure all fields are valid numbers.');
+		$("#results").removeAttr("style").hide();
+		$("#protip").show();
+		return;
+	}
+	
+	$("#results").show();
+	$("#protip").removeAttr("style").hide();
+	
+	
+	var formattedCost = parseFloat(Math.abs(Math.round(totalMonthlyCost * 100)) / 100).toFixed(2);
+	if(totalMonthlyCost < 0){
+		var payoffMonths = equipment/totalMonthlyCost;
+		var formattedPayoffMonths = parseFloat(Math.abs(Math.round(payoffMonths * 100)) / 100).toFixed(1);
+		var formattedEquipmentRecoup = parseFloat(equipment*resaleValue).toFixed(2);
+		var recoupString = formattedPayoffMonths < 1 ? 
+			"less than a month" :
+			formattedPayoffMonths + ' months';
+		var notToMentionString = formattedEquipmentRecoup < 1 ? 
+			"." :
+			', not to mention you\'ll get back an estimated $' + formattedEquipmentRecoup  + ' when you sell it.'
+		
+		debugger;
+	$('#results').html('<h2 class=\'happytext\'>Congratulations!</h3> <p>You\'ll save <strong>$' + formattedCost + '</strong> per month by switching to a home gym. Way to spend!</p><p>You\'ll pay off your initial equipment cost in ' + recoupString + notToMentionString + '</p>');
+		//$('#results').html('<h2 class=\'happytext\'>Congratulations!</h3> <p>You\'ll save <strong>$' + formattedCost + '</strong> per month by switching to a home gym. Way to spend!</p><p></p>');
+	}
+	else if(totalMonthlyCost == 0){
+		$('#results').html('<h2 class=\'happytext\'>Congratulations!</h3> <p>You\'ll break even. <i>Worth it.</i></p>');	
+	}
+	else{
+		$('#results').html('<h2 class=\'costlytext\'>Your results</h3> <p>Your home gym will cost you an additional <strong>$' + formattedCost + '</strong> month. But really, is that so much to pay to have your own sweet power rack, a good barbell, rubberized plates, a treadmill, several leg machines, a 70" QLED TV with a 6 channel surround sound system, and all the accoutrements you\'d come to expect in a top-quality man/woman cave?</p>');	
+	}
+		//console.log(totalMonthlyCost);	
+   //$('#useNew').click( function() {
+   // $('#inputTA').val(newSaveString);
+    //return false; 
+  //});
+}
+</script>
+</head>
+<body>
+
+<div id="body_div">
+
+<h2>Welcome to the Home Gym Price Rationalizer!</h2>
+<p>So you want to drop some cash on a home gym, but want to run the numbers first? Look no further! Enter your estimates below and this calculator will tell you your true monthly cost.</p>
+
+<h3>Estimates</h3>
+<table>
+<tr>
+	<td>Total equipment price: </td>
+	<td>$<input type="text" id="equipment" onkeyup="runNumbers();"/></td>
+</tr>
+<tr>
+	<td>Estimated resale value % (enter 0-100): </td>
+	<td><input type="text" id="resale_value" onkeyup="runNumbers();"/>%</td>
+</tr>
+<tr>
+	<td>Length of ownership: </td>
+	<td><input type="text" id="length_ownership" onkeyup="runNumbers();"/> months</td>
+</tr>
+<tr>
+	<td>Monthly value of gym space: </td>
+	<td>$<input type="text" id="space_value" onkeyup="runNumbers();"/></td>
+</tr>
+<tr>
+	<td>Estimated number of users: </td>
+	<td><input type="text" id="num_users" onkeyup="runNumbers();"/> users</td>
+</tr>
+<tr>
+	<td>Monthly price of gym membership: </td>
+	<td>$<input type="text" id="membership_price" onkeyup="runNumbers();"/></td>
+</tr>
+</table>
+
+<div id="results">Results</div>
+<div id="protip">Enter numbers above to see results. (Only numbers -- no percent signs or anything else.)</div>
+
+<br/>
+<hr/>
+
+<h3>Definitions</h3>
+
+<table>
+<tr>
+	<td class="def">Total equipment price</td>
+	<td>The total price of installing your home gym</td>
+</tr>
+<tr>
+	<td class="def">Estimated resale value</td>
+	<td>What percentage of purchase price you can sell your equipment back for. Enter something like 30-60% if you're buying new equipment, 90% if you're buying off Craigslist, or 120% if you're buying off Craigslist in a populated area and are really good at haggling.</td>
+</tr>
+<tr>
+	<td class="def">Length of ownership</td>
+	<td>How long you plan to keep your gym</td>
+</tr>
+<tr>
+	<td class="def">Monthly value of gym space</td>
+	<td>How much the space that your gym will be occupying is worth to you. If it would otherwise be wasted space, enter 0. If you're having to rent a separate bedroom to house your gym, enter the proportional amount of your monthly rent.</td>
+</tr>
+<tr>
+	<td class="def">Estimated number of users</td>
+	<td>The number of people who, by using your gym, will avoid paying for a gym membership. Set this to zero if you plan on keeping your gym memberships.</td>
+</tr>
+<tr>
+	<td class="def">Monthly price of gym membership</td>
+	<td>How much you'd be paying your local neighborhood corporate gym.</td>
+</tr>
+</table>
+
+<hr/>
+
+<p><strong>Note</strong>: <i>these numbers assume you're not just going to put all your equipment on your credit cards. If you put this all on your credit cards, the math doesn't work out at all and no online calculator can save you from your questionable financial decisions, or the wrath of your SO. Keep going to the gym until you can save up a few hundred.</i></p>
+
+</div>
+</html>
